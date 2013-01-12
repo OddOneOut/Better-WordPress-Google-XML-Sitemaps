@@ -1727,13 +1727,15 @@ if (!empty($page))
 		$priority = str_replace(',', '.', sprintf($this->templates['priority'], $priority));
 		$lastmod = (!empty($lastmod)) ? sprintf($this->templates['lastmod'], $lastmod) : '';
 		if (!empty($url)){
-			$desktop = sprintf($this->templates['url'], $url, $lastmod, $freq, $priority, '');
+			$xml = sprintf($this->templates['url'], $url, $lastmod, $freq, $priority, '');
 
-			$parsed = parse_url($url);
-			$mobileurl = str_replace($parsed['host'], $this->options['input_mobile_domain'], $url);
-			$mobile = sprintf($this->templates['url'], $mobileurl, $lastmod, $freq, $priority, $this->templates['mobile']);
+			if($this->options['input_mobile_domain']){
+				$parsed = parse_url($url);
+				$mobileurl = str_replace($parsed['host'], $this->options['input_mobile_domain'], $url);
+				$xml .= sprintf($this->templates['url'], $mobileurl, $lastmod, $freq, $priority, $this->templates['mobile']);
+			}
 
-			return $desktop . $mobile;
+			return $xml;
 		}else
 			return '';
 	}
