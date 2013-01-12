@@ -131,7 +131,8 @@ class BWP_SIMPLE_GXS extends BWP_FRAMEWORK {
 				'bing' => 'http://www.bing.com/webmaster/ping.aspx?siteMap=%s', 
 				'ask' => 'http://submissions.ask.com/ping?sitemap=%s'),
 			'input_sitemap_url' => '',
-			'input_sitemap_struct' => ''
+			'input_sitemap_struct' => '',
+			'input_mobile_domain' => ''
 		);
 		// Super admin only options
 		$this->site_options = array('enable_robots', 'enable_global_robots', 'enable_log', 'enable_debug', 'enable_ping', 'enable_ping_google', 'enable_ping_bing', 'enable_ping_ask', 'enable_gzip', 'enable_php_clean', 'enable_cache', 'enable_cache_auto_gen', 'input_cache_age', 'input_alt_module_dir', 'input_sql_limit', 'input_cache_dir', 'select_time_type');
@@ -156,10 +157,11 @@ class BWP_SIMPLE_GXS extends BWP_FRAMEWORK {
 			// Sitemap index
 			'sitemap' 		=> "\n\t" . '<sitemap>' . "\n\t\t" . '<loc>%s</loc>%s' . "\n\t" . '</sitemap>',
 			// Normal sitemap
-			'url' 			=> "\n\t" . '<url>' . "\n\t\t" . '<loc>%1$s</loc>%2$s%3$s%4$s' . "\n\t" . '</url>',
+			'url' 			=> "\n\t" . '<url>' . "\n\t\t" . '<loc>%1$s</loc>%2$s%3$s%4$s%5$s' . "\n\t" . '</url>',
 			'lastmod' 		=> "\n\t\t" . '<lastmod>%s</lastmod>',
 			'changefreq' 	=> "\n\t\t" . '<changefreq>%s</changefreq>',
 			'priority' 		=> "\n\t\t" . '<priority>%.1f</priority>',
+			'mobile' 		=> "\n\t\t" . '<mobile:mobile />',
 			// Google News Sitemap
 			'news' 			=> "\n\t" . '<url>' . "\n\t\t" . '<loc>%1$s</loc>' . "\n\t\t" . '<news:news>%2$s%3$s%4$s%5$s%6$s' . "\n\t\t" . '</news:news>' . "\n\t" . '</url>',
 			'news_publication' => "\n\t\t\t" . '<news:publication>%1$s%2$s</news:publication>',
@@ -452,9 +454,10 @@ if (!empty($page))
 		$bwp_option_page->set_current_tab(2);
 
 		$form = array(
-			'items'			=> array('input', 'select', 'select', 'select', 'checkbox', 'checkbox', 'input', 'checkbox', 'checkbox', 'checkbox', 'checkbox', 'heading', 'checkbox', 'checkbox', 'checkbox', 'section', 'section', 'section', 'heading', 'input', 'input', 'heading', 'checkbox', 'checkbox', 'input', 'input'),
+			'items'			=> array('input', 'input', 'select', 'select', 'select', 'checkbox', 'checkbox', 'input', 'checkbox', 'checkbox', 'checkbox', 'checkbox', 'heading', 'checkbox', 'checkbox', 'checkbox', 'section', 'section', 'section', 'heading', 'input', 'input', 'heading', 'checkbox', 'checkbox', 'input', 'input'),
 			'item_labels'	=> array
 			(
+				__('Mobile Domain', 'bwp-simple-gxs'),
 				__('Output no more than', 'bwp-simple-gxs'),
 				__('Default change frequency', 'bwp-simple-gxs'),
 				__('Default priority', 'bwp-simple-gxs'),
@@ -482,7 +485,7 @@ if (!empty($page))
 				__('Cached sitemaps will last for', 'bwp-simple-gxs'),
 				__('Cached sitemaps are stored in (auto detected)', 'bwp-simple-gxs')
 			),
-			'item_names'	=> array('input_item_limit', 'select_default_freq', 'select_default_pri', 'select_min_pri', 'cb14', 'cb10', 'input_custom_xslt', 'cb3', 'cb6', 'cb4', 'cb15', 'h5', 'cb12', 'cb11', 'cb5', 'sec1', 'sec2', 'sec3', 'h4', 'input_alt_module_dir', 'input_sql_limit', 'h3', 'cb1', 'cb2', 'input_cache_age', 'input_cache_dir'),
+			'item_names'	=> array('input_mobile_domain', 'input_item_limit', 'select_default_freq', 'select_default_pri', 'select_min_pri', 'cb14', 'cb10', 'input_custom_xslt', 'cb3', 'cb6', 'cb4', 'cb15', 'h5', 'cb12', 'cb11', 'cb5', 'sec1', 'sec2', 'sec3', 'h4', 'input_alt_module_dir', 'input_sql_limit', 'h3', 'cb1', 'cb2', 'input_cache_age', 'input_cache_dir'),
 			'heading'			=> array(
 				'h3'	=> __('<em>Cache your sitemaps for better performance.</em>', 'bwp-simple-gxs'),
 				'h4'	=> sprintf(__('<em>This plugin uses modules to build sitemap data so it is recommended that you extend this plugin using modules rather than hooks. Some of the settings below only affect modules extending the base module class. Read more about using modules <a href="%s#using-modules">here</a>.</em>', 'bwp-simple-gxs'), $this->plugin_url),
@@ -547,7 +550,8 @@ if (!empty($page))
 				'input_sql_limit' => array('size' => 5, 'label' => __('item(s) in one SQL query. This helps you avoid running too heavy queries.', 'bwp-simple-gxs')),
 				'input_oldest' => array('size' => 3, 'label' => '&mdash;'),
 				'input_cache_age' => array('size' => 5, 'label' => '&mdash;'),
-				'input_custom_xslt' => array('size' => 90, 'label' => __('expected to be an absolute URL, e.g. <code>http://example.com/my-stylesheet.xsl</code>. You must also have a style sheet for the sitemapindex that can be accessed through the above URL, e.g. <code>my-stylesheet.xsl</code> and <code>my-stylesheetindex.xsl</code>). Please leave blank if you do not wish to use.', 'bwp-simple-gxs'))
+				'input_custom_xslt' => array('size' => 90, 'label' => __('expected to be an absolute URL, e.g. <code>http://example.com/my-stylesheet.xsl</code>. You must also have a style sheet for the sitemapindex that can be accessed through the above URL, e.g. <code>my-stylesheet.xsl</code> and <code>my-stylesheetindex.xsl</code>). Please leave blank if you do not wish to use.', 'bwp-simple-gxs')),
+				'input_mobile_domain' => array('size' => 50, 'label' => __('Domain that wordpress will redirect to for mobile devices.'), 'bwp-simple-gxs'),
 			),
 			'inline_fields' => array(
 				'input_cache_age' => array('select_time_type' => 'select'),
@@ -563,7 +567,7 @@ if (!empty($page))
 		$form['select']['select_default_freq'] = $changefreq;
 
 		// Get the options
-		$options = $bwp_option_page->get_options(array('input_item_limit', 'input_split_limit_post', 'input_alt_module_dir', 'input_cache_dir', 'input_sql_limit', 'input_cache_age', 'input_custom_xslt', 'input_exclude_post_type', 'input_exclude_taxonomy', 'enable_gmt', 'enable_robots', 'enable_xslt', 'enable_cache', 'enable_cache_auto_gen', 'enable_stats', 'enable_credit', 'enable_sitemap_split_post', 'enable_global_robots', 'enable_sitemap_date', 'enable_sitemap_taxonomy', 'enable_sitemap_external', 'enable_sitemap_author', 'enable_sitemap_site', 'enable_gzip', 'enable_php_clean', 'select_time_type', 'select_default_freq', 'select_default_pri', 'select_min_pri'), $this->options);
+		$options = $bwp_option_page->get_options(array('input_mobile_domain', 'input_item_limit', 'input_split_limit_post', 'input_alt_module_dir', 'input_cache_dir', 'input_sql_limit', 'input_cache_age', 'input_custom_xslt', 'input_exclude_post_type', 'input_exclude_taxonomy', 'enable_gmt', 'enable_robots', 'enable_xslt', 'enable_cache', 'enable_cache_auto_gen', 'enable_stats', 'enable_credit', 'enable_sitemap_split_post', 'enable_global_robots', 'enable_sitemap_date', 'enable_sitemap_taxonomy', 'enable_sitemap_external', 'enable_sitemap_author', 'enable_sitemap_site', 'enable_gzip', 'enable_php_clean', 'select_time_type', 'select_default_freq', 'select_default_pri', 'select_min_pri'), $this->options);
 
 		// Get option from the database
 		$options = $bwp_option_page->get_db_options($page, $options);
@@ -1722,9 +1726,15 @@ if (!empty($page))
 		$freq = sprintf($this->templates['changefreq'], $freq);
 		$priority = str_replace(',', '.', sprintf($this->templates['priority'], $priority));
 		$lastmod = (!empty($lastmod)) ? sprintf($this->templates['lastmod'], $lastmod) : '';
-		if (!empty($url))
-			return sprintf($this->templates['url'], $url, $lastmod, $freq, $priority);
-		else
+		if (!empty($url)){
+			$desktop = sprintf($this->templates['url'], $url, $lastmod, $freq, $priority, '');
+
+			$parsed = parse_url($url);
+			$mobileurl = str_replace($parsed['host'], $this->options['input_mobile_domain'], $url);
+			$mobile = sprintf($this->templates['url'], $mobileurl, $lastmod, $freq, $priority, $this->templates['mobile']);
+
+			return $desktop . $mobile;
+		}else
 			return '';
 	}
 
@@ -1760,7 +1770,7 @@ if (!empty($page))
 	{
 		$xml = '<' . '?xml version="1.0" encoding="UTF-8"?'.'>' . "\n";
 		$xml .= (!empty($this->xslt)) ? '<?xml-stylesheet type="text/xsl" href="' . $this->xslt . '"?>' . "\n\n" : '';
-		$xml .= '<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n\t" . 'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9' . "\n\t" . 'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"' . "\n\t" . 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+		$xml .= '<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n\t" . 'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9' . "\n\t" . 'http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd"' . "\n\t" . 'xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"' . "\n\t" . 'xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 		if ('yes' != $this->options['enable_xslt'] && 'yes' == $this->options['enable_credit'])
 			$xml .= $this->credit();
 
