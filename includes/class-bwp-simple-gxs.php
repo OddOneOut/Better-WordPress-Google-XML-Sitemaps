@@ -161,7 +161,7 @@ class BWP_SIMPLE_GXS extends BWP_FRAMEWORK {
 			'changefreq' 	=> "\n\t\t" . '<changefreq>%s</changefreq>',
 			'priority' 		=> "\n\t\t" . '<priority>%.1f</priority>',
 			// Google News Sitemap
-			'news' 			=> "\n\t" . '<url>' . "\n\t\t" . '<loc>%1$s</loc>' . "\n\t\t" . '<news:news>%2$s%3$s%4$s%5$s%6$s' . "\n\t\t" . '</news:news>' . "\n\t" . '</url>',
+			'news' 			=> "\n\t" . '<url>' . "\n\t\t" . '<loc>%1$s</loc>' . "\n\t\t" . '<news:news>%2$s%3$s%4$s%5$s%6$s' . "\n\t\t" . '</news:news>' . '%7$s' . "\n\t" . '</url>',
 			'news_publication' => "\n\t\t\t" . '<news:publication>%1$s%2$s</news:publication>',
 			'news_name'		=> "\n\t\t\t\t" . '<news:name>%s</news:name>',
 			'news_language' => "\n\t\t\t\t" . '<news:language>%s</news:language>',
@@ -169,6 +169,7 @@ class BWP_SIMPLE_GXS extends BWP_FRAMEWORK {
 			'news_pub_date'	=> "\n\t\t\t" . '<news:publication_date>%s</news:publication_date>',
 			'news_title'	=> "\n\t\t\t" . '<news:title>%s</news:title>',
 			'news_keywords' => "\n\t\t\t" . '<news:keywords>%s</news:keywords>',
+			'news_image'	=> "\n\t\t\t" . '<image:image><image:loc>%s</image:loc></image:image>',
 			// Misc			
 			'xslt_style' 	=> '',
 			'stats'	=> "\n" . '<!-- ' . __('This sitemap was originally generated in %s second(s) (Memory usage: %s) - %s queries - %s URL(s) listed', 'bwp-simple-gxs') . ' -->'
@@ -1737,16 +1738,17 @@ if (!empty($page))
 			return '';
 	}
 
-	private function generate_news_sitemap_item($loc = '', $name = '', $lang = 'en', $genres = '', $pub_date = '', $title = '', $keywords = '')
+	private function generate_news_sitemap_item($loc = '', $name = '', $lang = 'en', $genres = '', $pub_date = '', $title = '', $keywords = '', $image = '')
 	{
 		$name = sprintf($this->templates['news_name'], $name);
 		$lang = sprintf($this->templates['news_language'], $lang);
 		$news_pub = sprintf($this->templates['news_publication'], $name, $lang);
+		$news_img = sprintf($this->templates['news_image'],$image);
 		$genres = (!empty($genres)) ? sprintf($this->templates['news_genres'], $genres) : '';
 		$pub_date = sprintf($this->templates['news_pub_date'], $pub_date);
 		$title = sprintf($this->templates['news_title'], $title);
 		$keywords = (!empty($keywords)) ? sprintf($this->templates['news_keywords'], $keywords) : '';
-		return sprintf($this->templates['news'], $loc, $news_pub, $genres, $pub_date, $title, $keywords);
+		return sprintf($this->templates['news'], $loc, $news_pub, $genres, $pub_date, $title, $keywords, $news_img);
 	}
 
 	function credit()
@@ -1794,7 +1796,11 @@ if (!empty($page))
 	function generate_news_sitemap($output = array())
 	{
 		$xml = '<' . '?xml version="1.0" encoding="UTF-8"?'.'>' . "\n";
-		$xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n\t" . 'xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"' . "\n\t" . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n\t" . 'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd' . "\n\t" . 'http://www.google.com/schemas/sitemap-news/0.9 http://www.google.com/schemas/sitemap-news/0.9/sitemap-news.xsd">' . "\n";
+		$xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"' . "\n\t" . 'xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"' . "\n\t" . 'xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' . "\n\t" . 
+		'xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"' ."\n\t" . 
+		'xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd' . "\n\t" .
+		'http://www.google.com/schemas/sitemap-news/0.9' . "\n\t" .
+		'http://www.google.com/schemas/sitemap-news/0.9/sitemap-news.xsd">' . "\n";
 
 		if ('yes' == $this->options['enable_credit'])
 			$xml .= $this->credit();
@@ -1814,7 +1820,8 @@ if (!empty($page))
 			$url['pub_date'] = (!empty($url['pub_date'])) ? $url['pub_date'] : '';
 			$url['title'] = (!empty($url['title'])) ? htmlspecialchars($url['title']) : '';
 			$url['keywords'] = (!empty($url['keywords'])) ? htmlspecialchars($url['keywords']) : '';
-			$xml .= $this->generate_news_sitemap_item($url['location'], $url['name'], $url['language'], $url['genres'], $url['pub_date'], $url['title'], $url['keywords']);
+			$url['news_image'] = (!empty($url['news_image'])) ? htmlspecialchars($url['news_image']) : '';
+			$xml .= $this->generate_news_sitemap_item($url['location'], $url['name'], $url['language'], $url['genres'], $url['pub_date'], $url['title'], $url['keywords'], $url['news_image']);
 			$this->output_num++;
 		}
 

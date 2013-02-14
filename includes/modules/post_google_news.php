@@ -152,6 +152,8 @@ class BWP_GXS_MODULE_POST_GOOGLE_NEWS extends BWP_GXS_MODULE {
 				$data['genres'] = !empty($news_genres['cat_' . $post->term_id]) ? $news_genres['cat_' . $post->term_id] : '';
 			$data['pub_date'] = $this->format_lastmod(strtotime($post->post_date));
 			$data['title'] = $post->post_title;
+			$data['news_image'] = wp_get_attachment_url(get_post_thumbnail_id($post->ID, 'thumbnail'));
+
 			// Multi-cat support for news categories as keywords
 			if ('cat' == $bwp_gxs->options['select_news_keyword_type'] && isset($post->term_names))
 			{
