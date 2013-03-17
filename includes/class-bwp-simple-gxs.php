@@ -179,8 +179,15 @@ class BWP_SIMPLE_GXS extends BWP_FRAMEWORK {
 		
 		$this->cache_time = (int) $this->options['input_cache_age'] * (int) $this->options['select_time_type'];
 		$this->oldest_time = (int) $this->options['input_oldest'] * (int) $this->options['select_oldest_type'];
-		$this->options['input_cache_dir'] = plugin_dir_path($this->plugin_file) . 'cache/';
-		$this->options['input_cache_dir'] = $this->uni_path_sep($this->options['input_cache_dir']);
+
+		// Allow overriding of the cache folder via wp-config.php
+		if ( defined( 'BWP_GXS_CACHE_DIR' ) && BWP_GXS_CACHE_DIR ) {
+			$cache_dir = trailingslashit( BWP_GXS_CACHE_DIR );
+		} else {
+			// Place cache folder in /wp-content/cache/bwp_gxs/
+			$cache_dir = WP_CONTENT_DIR . 'cache/bwp_gxs/';
+		}
+		$this->options['input_cache_dir'] = $cache_dir;
 
 		$module_map = apply_filters('bwp_gxs_module_mapping', array());
 		$this->module_map = wp_parse_args($module_map, array('post_format' => 'post_tag'));
