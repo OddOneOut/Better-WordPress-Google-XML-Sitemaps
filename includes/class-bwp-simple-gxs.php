@@ -1425,9 +1425,10 @@ if (!empty($page))
 			
 			$this->module_data = array('module' => $module, 'sub_module' => $sub_module, 'module_key' => $module_key, 'module_name' => $module_name, 'module_part' => $module_part);
 
-			if (class_exists('BWP_GXS_MODULE_' . $module_key))
+			$module_underscore = str_replace( '-', '_', $module_key );
+			if (class_exists('BWP_GXS_MODULE_' . $module_underscore))
 			{
-				$class_name = 'BWP_GXS_MODULE_' . $module_key;
+				$class_name = 'BWP_GXS_MODULE_' . $module_underscore;
 				$the_module = new $class_name();
 				if ('url' == $the_module->type)
 					$success = $this->generate_sitemap($the_module->data);
@@ -1438,7 +1439,7 @@ if (!empty($page))
 				unset($the_module->data);
 			}
 			else
-				$this->elog(sprintf(__('There is no class named <strong>%s</strong> in the module file <strong>%s</strong>.', 'bwp-simple-gxs'), 'BWP_GXS_MODULE_' . strtoupper($module_key), $module_file), true);
+				$this->elog(sprintf(__('There is no class named <strong>%s</strong> in the module file <strong>%s</strong>.', 'bwp-simple-gxs'), 'BWP_GXS_MODULE_' . strtoupper($module_underscore), $module_file), true);
 		}
 		else if ('sitemapindex' == $module)
 		{
