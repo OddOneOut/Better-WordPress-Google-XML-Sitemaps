@@ -1432,6 +1432,7 @@ class BWP_SIMPLE_GXS extends BWP_FRAMEWORK_IMPROVED
 							__('Polish', $this->domain)                => 'pl',
 							__('Russian', $this->domain)               => 'ru',
 							__('Spanish', $this->domain)               => 'es',
+							__('Swedish', $this->domain)               => 'sv',
 							__('Turkish', $this->domain)               => 'tr',
 							__('Vietnamese', $this->domain)            => 'vi'
 						),
