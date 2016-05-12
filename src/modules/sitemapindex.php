@@ -73,6 +73,8 @@ class BWP_GXS_MODULE_INDEX extends BWP_GXS_MODULE
 				? ' AND p.ID NOT IN (' . implode(',', $excluded_posts) . ') '
 				: '';
 
+			$bwp_gxs_post_count_where = apply_filters( 'bwp_gxs_post_count_where', 'AND 1=1' );
+
 			// we need to split post-based sitemaps
 			$post_count_query = '
 				SELECT
@@ -81,6 +83,7 @@ class BWP_GXS_MODULE_INDEX extends BWP_GXS_MODULE
 				FROM ' . $wpdb->posts . " p
 				WHERE p.post_status = 'publish'
 					$exclude_post_sql
+					$bwp_gxs_post_count_where
 					AND p.post_password = ''" . '
 				GROUP BY p.post_type
 			';
