@@ -23,7 +23,7 @@ class BWP_Sitemaps_Sitemap_Sanitizer_Xml_PrioritySanitizer extends BWP_Sitemaps_
 			return null;
 		}
 
-		return sprintf('%.1f', $value);
+		return sprintf('%.1F', $value);
 	}
 
 	protected function set_default_options()
